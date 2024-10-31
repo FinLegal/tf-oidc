@@ -3,7 +3,8 @@
 ########################################
 
 module "git" {
-  source = "../../../../scalr-modules/resource_modules/terraform-aws-oidc"
+  source  = "finlegal.scalr.io/acc-v0od9n5ghtfveu0dj/oidc/aws"
+  version = "0.1.23"
 
   name_prefix = local.name_prefix
   oidc_provider_configuration = {
