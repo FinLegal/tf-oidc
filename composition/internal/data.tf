@@ -66,7 +66,7 @@ locals {
   ## Casesites ##
   casesite_ecr              = split("/", data.terraform_remote_state.casesite_ecr.outputs.aws_ecr_repository)
   casesite_ecr_arn          = "arn:aws:ecr:${data.aws_region.this.name}:${data.aws_caller_identity.this.account_id}:repository/${local.casesite_ecr[1]}"
-  casesite_release_branches = ["main", "release_generic", "release-hf-trades", "release-kl-merc", "release-kl-vauxhall", "release-lsc-energy", "release-mb-floods", "release-mb-lisbon", "release-mb-piedmont", "release-mb-roundup", "release-mb-shareholder", "release-mb-star"]
+  casesite_release_branches = ["main", "release-generic", "release-hf-trades", "release-kl-merc", "release-kl-vauxhall", "release-lsc-energy", "release-mb-floods", "release-mb-lisbon", "release-mb-piedmont", "release-mb-roundup", "release-mb-shareholder", "release-mb-star"]
 
   ## Casefunnel ##
   casefunnel_admin_ecr_arn      = "arn:aws:ecr:${data.aws_region.this.name}:${data.aws_caller_identity.this.account_id}:repository/casefunnel-admin"
