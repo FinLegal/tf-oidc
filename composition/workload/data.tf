@@ -53,29 +53,19 @@ locals {
   casesite_task_role     = lookup(data.terraform_remote_state.casesites.outputs.task_iam_roles, "casesites", {}).arn
 
   ## Legacy Casesites ##
-  kl_vauxhall_service_role    = "arn:aws:iam::${data.aws_caller_identity.this.account_id}:role/KLVauxhall-${local.ecs_role_naming}-ecs_service_execution_role"
-  mb_lisbon_service_role      = "arn:aws:iam::${data.aws_caller_identity.this.account_id}:role/MBLisbon-${local.ecs_role_naming}-ecs_service_execution_role"
-  mb_star_service_role        = "arn:aws:iam::${data.aws_caller_identity.this.account_id}:role/MBStar-${local.ecs_role_naming}-ecs_service_execution_role"
-  mb_shareholder_service_role = "arn:aws:iam::${data.aws_caller_identity.this.account_id}:role/MBShareholder-${local.ecs_role_naming}-ecs_service_execution_role"
-  mb_floods_service_role      = "arn:aws:iam::${data.aws_caller_identity.this.account_id}:role/MB-${local.ecs_role_naming}-ecs_service_execution_role"
-  mb_roundup_service_role     = "arn:aws:iam::${data.aws_caller_identity.this.account_id}:role/MBRoundup-${local.ecs_role_naming}-ecs_service_execution_role"
-  hf_trades_service_role      = "arn:aws:iam::${data.aws_caller_identity.this.account_id}:role/HFTrades-${local.ecs_role_naming}-ecs_service_execution_role"
-  kl_merc_service_role        = "arn:aws:iam::${data.aws_caller_identity.this.account_id}:role/KL-${local.ecs_role_naming}-ecs_service_execution_role"
-  mb_piedmont_service_role    = "arn:aws:iam::${data.aws_caller_identity.this.account_id}:role/MBPiedmont-${local.ecs_role_naming}-ecs_service_execution_role"
-  lsc_energy_service_role     = "arn:aws:iam::${data.aws_caller_identity.this.account_id}:role/LSCEnergy-${local.ecs_role_naming}-ecs_service_execution_role"
+  kl_vauxhall_service_role = "arn:aws:iam::${data.aws_caller_identity.this.account_id}:role/KLVauxhall-${local.ecs_role_naming}-ecs_service_execution_role"
+  mb_floods_service_role   = "arn:aws:iam::${data.aws_caller_identity.this.account_id}:role/MB-${local.ecs_role_naming}-ecs_service_execution_role"
+  hf_trades_service_role   = "arn:aws:iam::${data.aws_caller_identity.this.account_id}:role/HFTrades-${local.ecs_role_naming}-ecs_service_execution_role"
+  kl_merc_service_role     = "arn:aws:iam::${data.aws_caller_identity.this.account_id}:role/KL-${local.ecs_role_naming}-ecs_service_execution_role"
+  lsc_energy_service_role  = "arn:aws:iam::${data.aws_caller_identity.this.account_id}:role/LSCEnergy-${local.ecs_role_naming}-ecs_service_execution_role"
 
-  kl_vauxhall_task_role    = "arn:aws:iam::${data.aws_caller_identity.this.account_id}:role/KLVauxhall-${local.ecs_role_naming}-ecs_task_execution_role"
-  mb_lisbon_task_role      = "arn:aws:iam::${data.aws_caller_identity.this.account_id}:role/MBLisbon-${local.ecs_role_naming}-ecs_task_execution_role"
-  mb_star_task_role        = "arn:aws:iam::${data.aws_caller_identity.this.account_id}:role/MBStar-${local.ecs_role_naming}-ecs_task_execution_role"
-  mb_shareholder_task_role = "arn:aws:iam::${data.aws_caller_identity.this.account_id}:role/MBShareholder-${local.ecs_role_naming}-ecs_task_execution_role"
-  mb_floods_task_role      = "arn:aws:iam::${data.aws_caller_identity.this.account_id}:role/MB-${local.ecs_role_naming}-ecs_task_execution_role"
-  mb_roundup_task_role     = "arn:aws:iam::${data.aws_caller_identity.this.account_id}:role/MBRoundup-${local.ecs_role_naming}-ecs_task_execution_role"
-  hf_trades_task_role      = "arn:aws:iam::${data.aws_caller_identity.this.account_id}:role/HFTrades-${local.ecs_role_naming}-ecs_task_execution_role"
-  kl_merc_task_role        = "arn:aws:iam::${data.aws_caller_identity.this.account_id}:role/KL-${local.ecs_role_naming}-ecs_task_execution_role"
-  mb_piedmont_task_role    = "arn:aws:iam::${data.aws_caller_identity.this.account_id}:role/MBPiedmont-${local.ecs_role_naming}-ecs_task_execution_role"
-  lsc_energy_task_role     = "arn:aws:iam::${data.aws_caller_identity.this.account_id}:role/LSCEnergy-${local.ecs_role_naming}-ecs_task_execution_role"
+  kl_vauxhall_task_role = "arn:aws:iam::${data.aws_caller_identity.this.account_id}:role/KLVauxhall-${local.ecs_role_naming}-ecs_task_execution_role"
+  mb_floods_task_role   = "arn:aws:iam::${data.aws_caller_identity.this.account_id}:role/MB-${local.ecs_role_naming}-ecs_task_execution_role"
+  hf_trades_task_role   = "arn:aws:iam::${data.aws_caller_identity.this.account_id}:role/HFTrades-${local.ecs_role_naming}-ecs_task_execution_role"
+  kl_merc_task_role     = "arn:aws:iam::${data.aws_caller_identity.this.account_id}:role/KL-${local.ecs_role_naming}-ecs_task_execution_role"
+  lsc_energy_task_role  = "arn:aws:iam::${data.aws_caller_identity.this.account_id}:role/LSCEnergy-${local.ecs_role_naming}-ecs_task_execution_role"
 
-  legacy_casesites_iam_roles = [local.kl_vauxhall_service_role, local.mb_lisbon_service_role, local.mb_star_service_role, local.mb_shareholder_service_role, local.mb_floods_service_role, local.mb_roundup_service_role, local.hf_trades_service_role, local.kl_merc_service_role, local.mb_piedmont_service_role, local.lsc_energy_service_role, local.kl_vauxhall_task_role, local.mb_lisbon_task_role, local.mb_star_task_role, local.mb_shareholder_task_role, local.mb_floods_task_role, local.mb_roundup_task_role, local.hf_trades_task_role, local.kl_merc_task_role, local.mb_piedmont_task_role, local.lsc_energy_task_role]
+  legacy_casesites_iam_roles = [local.kl_vauxhall_service_role, local.mb_floods_service_role, local.hf_trades_service_role, local.kl_merc_service_role, local.lsc_energy_service_role, local.kl_vauxhall_task_role, local.mb_floods_task_role, local.hf_trades_task_role, local.kl_merc_task_role, local.lsc_energy_task_role]
 
   ## CaseFunnel Objects - Will be moved to Scalr over time ##
   casefunnel_api_service_role        = "arn:aws:iam::${data.aws_caller_identity.this.account_id}:role/API-${local.ecs_role_naming}-ecs_service_execution_role"

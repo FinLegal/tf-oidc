@@ -66,7 +66,7 @@ locals {
   ## Casesites ##
   casesite_ecr              = split("/", data.terraform_remote_state.casesite_ecr.outputs.aws_ecr_repository)
   casesite_ecr_arn          = "arn:aws:ecr:${data.aws_region.this.name}:${data.aws_caller_identity.this.account_id}:repository/${local.casesite_ecr[1]}"
-  casesite_release_branches = ["main", "release-generic", "release-hf-trades", "release-kl-merc", "release-kl-vauxhall", "release-lsc-energy", "release-mb-floods", "release-mb-lisbon", "release-mb-piedmont", "release-mb-roundup", "release-mb-shareholder", "release-mb-star"]
+  casesite_release_branches = ["main", "release-generic", "release-hf-trades", "release-kl-merc", "release-kl-vauxhall", "release-lsc-energy", "release-mb-floods"]
 
   ## Casefunnel ##
   casefunnel_admin_ecr_arn      = "arn:aws:ecr:${data.aws_region.this.name}:${data.aws_caller_identity.this.account_id}:repository/casefunnel-admin"
@@ -78,27 +78,17 @@ locals {
 
   ## Legacy Casesites ##
   # ECR
-  hf_trades_ecr_arn          = "arn:aws:ecr:${data.aws_region.this.name}:${data.aws_caller_identity.this.account_id}:repository/case-site-hf-trades"
-  hf_trades_release_arn      = "arn:aws:ecr:${data.aws_region.this.name}:${data.aws_caller_identity.this.account_id}:repository/case-site-hf-trades-release"
-  kl_merc_ecr_arn            = "arn:aws:ecr:${data.aws_region.this.name}:${data.aws_caller_identity.this.account_id}:repository/case-site-kl-merc"
-  kl_merc_release_arn        = "arn:aws:ecr:${data.aws_region.this.name}:${data.aws_caller_identity.this.account_id}:repository/case-site-kl-merc-release"
-  kl_vauxhall_ecr_arn        = "arn:aws:ecr:${data.aws_region.this.name}:${data.aws_caller_identity.this.account_id}:repository/case-site-kl-vauxhall"
-  kl_vauxhall_release_arn    = "arn:aws:ecr:${data.aws_region.this.name}:${data.aws_caller_identity.this.account_id}:repository/case-site-kl-vauxhall-release"
-  lsc_energy_ecr_arn         = "arn:aws:ecr:${data.aws_region.this.name}:${data.aws_caller_identity.this.account_id}:repository/case-site-lsc-energy"
-  lsc_energy_release_arn     = "arn:aws:ecr:${data.aws_region.this.name}:${data.aws_caller_identity.this.account_id}:repository/case-site-lsc-energy-release"
-  mb_floods_ecr_arn          = "arn:aws:ecr:${data.aws_region.this.name}:${data.aws_caller_identity.this.account_id}:repository/case-site-mb-floods"
-  mb_floods_release_arn      = "arn:aws:ecr:${data.aws_region.this.name}:${data.aws_caller_identity.this.account_id}:repository/case-site-mb-floods-release"
-  mb_lisbon_ecr_arn          = "arn:aws:ecr:${data.aws_region.this.name}:${data.aws_caller_identity.this.account_id}:repository/case-site-mb-lisbon"
-  mb_lisbon_release_arn      = "arn:aws:ecr:${data.aws_region.this.name}:${data.aws_caller_identity.this.account_id}:repository/case-site-mb-lisbon-release"
-  mb_piedmont_ecr_arn        = "arn:aws:ecr:${data.aws_region.this.name}:${data.aws_caller_identity.this.account_id}:repository/case-site-mb-piedmont"
-  mb_piedmont_release_arn    = "arn:aws:ecr:${data.aws_region.this.name}:${data.aws_caller_identity.this.account_id}:repository/case-site-mb-piedmont-release"
-  mb_roundup_ecr_arn         = "arn:aws:ecr:${data.aws_region.this.name}:${data.aws_caller_identity.this.account_id}:repository/case-site-mb-roundup"
-  mb_roundup_release_arn     = "arn:aws:ecr:${data.aws_region.this.name}:${data.aws_caller_identity.this.account_id}:repository/case-site-mb-roundup-release"
-  mb_shareholder_ecr_arn     = "arn:aws:ecr:${data.aws_region.this.name}:${data.aws_caller_identity.this.account_id}:repository/case-site-mb-shareholder"
-  mb_shareholder_release_arn = "arn:aws:ecr:${data.aws_region.this.name}:${data.aws_caller_identity.this.account_id}:repository/case-site-mb-shareholder-release"
-  mb_star_ecr_arn            = "arn:aws:ecr:${data.aws_region.this.name}:${data.aws_caller_identity.this.account_id}:repository/case-site-mb-star"
-  mb_star_release_arn        = "arn:aws:ecr:${data.aws_region.this.name}:${data.aws_caller_identity.this.account_id}:repository/case-site-mb-star-release"
-  legacy_ecr_arn_list        = [local.hf_trades_ecr_arn, local.hf_trades_release_arn, local.kl_merc_ecr_arn, local.kl_merc_release_arn, local.kl_vauxhall_ecr_arn, local.kl_vauxhall_release_arn, local.lsc_energy_ecr_arn, local.lsc_energy_release_arn, local.mb_floods_ecr_arn, local.mb_floods_release_arn, local.mb_lisbon_ecr_arn, local.mb_lisbon_release_arn, local.mb_piedmont_ecr_arn, local.mb_piedmont_release_arn, local.mb_roundup_ecr_arn, local.mb_roundup_release_arn, local.mb_shareholder_ecr_arn, local.mb_shareholder_release_arn, local.mb_star_ecr_arn, local.mb_star_release_arn]
+  hf_trades_ecr_arn       = "arn:aws:ecr:${data.aws_region.this.name}:${data.aws_caller_identity.this.account_id}:repository/case-site-hf-trades"
+  hf_trades_release_arn   = "arn:aws:ecr:${data.aws_region.this.name}:${data.aws_caller_identity.this.account_id}:repository/case-site-hf-trades-release"
+  kl_merc_ecr_arn         = "arn:aws:ecr:${data.aws_region.this.name}:${data.aws_caller_identity.this.account_id}:repository/case-site-kl-merc"
+  kl_merc_release_arn     = "arn:aws:ecr:${data.aws_region.this.name}:${data.aws_caller_identity.this.account_id}:repository/case-site-kl-merc-release"
+  kl_vauxhall_ecr_arn     = "arn:aws:ecr:${data.aws_region.this.name}:${data.aws_caller_identity.this.account_id}:repository/case-site-kl-vauxhall"
+  kl_vauxhall_release_arn = "arn:aws:ecr:${data.aws_region.this.name}:${data.aws_caller_identity.this.account_id}:repository/case-site-kl-vauxhall-release"
+  lsc_energy_ecr_arn      = "arn:aws:ecr:${data.aws_region.this.name}:${data.aws_caller_identity.this.account_id}:repository/case-site-lsc-energy"
+  lsc_energy_release_arn  = "arn:aws:ecr:${data.aws_region.this.name}:${data.aws_caller_identity.this.account_id}:repository/case-site-lsc-energy-release"
+  mb_floods_ecr_arn       = "arn:aws:ecr:${data.aws_region.this.name}:${data.aws_caller_identity.this.account_id}:repository/case-site-mb-floods"
+  mb_floods_release_arn   = "arn:aws:ecr:${data.aws_region.this.name}:${data.aws_caller_identity.this.account_id}:repository/case-site-mb-floods-release"
+  legacy_ecr_arn_list     = [local.hf_trades_ecr_arn, local.hf_trades_release_arn, local.kl_merc_ecr_arn, local.kl_merc_release_arn, local.kl_vauxhall_ecr_arn, local.kl_vauxhall_release_arn, local.lsc_energy_ecr_arn, local.lsc_energy_release_arn, local.mb_floods_ecr_arn, local.mb_floods_release_arn]
 }
 
 ########################################
