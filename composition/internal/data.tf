@@ -95,6 +95,26 @@ locals {
 # Policies
 ########################################
 
+data "aws_iam_policy_document" "this_terraform" {
+  statement {
+    sid         = "DisallowAdminActions"
+    effect      = "Allow"
+    not_actions = ["organizations:*", "account:*"]
+    resources   = ["*"]
+  }
+  statement {
+    sid    = "AllowBasicActions"
+    effect = "Allow"
+    actions = [
+      "account:GetAccountInformation",
+      "account:GetPrimaryEmail",
+      "account:ListRegions",
+      "organizations:DescribeOrganization"
+    ]
+    resources = ["*"]
+  }
+}
+
 data "aws_iam_policy_document" "this_storybook" {
   statement {
     sid       = "AllowList"
