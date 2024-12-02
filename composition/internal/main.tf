@@ -13,6 +13,15 @@ module "git" {
     thumbprint_list = ["1b511abead59c6ce207077c0bf0e0043b1382612"]
   }
   provider_role_configuration = {
+    ## legacy github terraform (infra repo) ##
+    "terraform" = {
+      policies = {
+        "terraform" = {
+          policy = data.aws_iam_policy_document.this_terraform.json
+        }
+      }
+      conditions = merge(local.aws_github_audience, { "repo" = { test = "StringLike", variable = "token.actions.githubusercontent.com:sub", values = ["repo:FinLegal/infrastructure:*"] } })
+    }
     ## Storybook ##
     "storybook" = {
       policies = {

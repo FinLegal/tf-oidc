@@ -20,7 +20,7 @@ module "git" {
           policy = data.aws_iam_policy_document.this_terraform.json
         }
       }
-      conditions = merge(local.aws_github_audience, { "repo" = { test = "StringEquals", variable = "token.actions.githubusercontent.com:sub", values = ["repo:FinLegal/infrastructure:*"] } })
+      conditions = merge(local.aws_github_audience, { "repo" = { test = "StringLike", variable = "token.actions.githubusercontent.com:sub", values = ["repo:FinLegal/infrastructure:*"] } })
     }
     ## case-definitions ##
     "casesitedefinitions" = {
