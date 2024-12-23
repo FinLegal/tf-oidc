@@ -4,7 +4,7 @@
 
 module "git" {
   source  = "finlegal.scalr.io/acc-v0od9n5ghtfveu0dj/oidc/aws"
-  version = "1.0.22-beta.14"
+  version = "1.0.22-beta.15"
 
   name_prefix = local.name_prefix
   oidc_provider_configuration = {
