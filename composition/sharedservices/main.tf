@@ -4,7 +4,7 @@
 
 module "git" {
   source  = "finlegal.scalr.io/acc-v0od9n5ghtfveu0dj/oidc/aws"
-  version = "1.0.22-beta.17"
+  version = "1.0.22-beta.18"
 
   oidc_provider_configuration = {
     url             = "https://token.actions.githubusercontent.com"
