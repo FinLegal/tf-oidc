@@ -67,7 +67,7 @@ module "git" {
     #  conditions = merge(local.aws_github_audience, { "repo" = { test = "StringEquals", variable = "token.actions.githubusercontent.com:sub", values = ["repo:FinLegal/casefunnel-static:ref:refs/heads/master"] } })
     #}
     ## Case Site ECR ##
-    "casesite-ecr" = {
+    "case-site-ecr" = {
       policies = {
         ecr = {
           policy = data.aws_iam_policy_document.this_casesite_ecr.json
