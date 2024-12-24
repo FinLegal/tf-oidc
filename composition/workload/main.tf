@@ -31,7 +31,7 @@ module "git" {
     #  conditions = merge(local.aws_github_audience, { "repo" = { test = "StringEquals", variable = "token.actions.githubusercontent.com:sub", values = ["repo:FinLegal/case-definitions:ref:refs/heads/main"] } })
     #}
     ## case-sites ##
-    "casesites" = {
+    "case-sites" = {
       policies = {
         "ecr" = {
           policy = data.aws_iam_policy_document.this_ecr_token.json
@@ -46,7 +46,7 @@ module "git" {
         #  policy = data.aws_iam_policy_document.this_casesites_legacy.json
         #}
       }
-      conditions = merge(local.aws_github_audience, { "repo" = { test = "StringEquals", variable = "token.actions.githubusercontent.com:sub", values = ["repo:FinLegal/case-sites:ref:refs/heads/main", "repo:FinLegal/case-sites:ref:refs/heads/release-generic"] } })
+      conditions = merge(local.aws_github_audience, { "repo" = { test = "StringEquals", variable = "token.actions.githubusercontent.com:sub", values = ["repo:FinLegal/case-sites:ref:refs/heads/main", "repo:FinLegal/case-sites:ref:refs/heads/release-generic", "repo:FinLegal/case-sites:ref:refs/heads/lza"] } })
     }
     ## casefunnel ##
     #"casefunnel" = {
