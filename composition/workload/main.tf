@@ -4,9 +4,8 @@
 
 module "git" {
   source  = "finlegal.scalr.io/acc-v0od9n5ghtfveu0dj/oidc/aws"
-  version = "0.1.23"
+  version = "1.0.22-beta.21"
 
-  name_prefix = local.name_prefix
   oidc_provider_configuration = {
     url             = "https://token.actions.githubusercontent.com"
     client_id_list  = ["sts.amazonaws.com"]
@@ -14,23 +13,23 @@ module "git" {
   }
   provider_role_configuration = {
     ## legacy github terraform (infra repo) ##
-    "terraform" = {
-      policies = {
-        "terraform" = {
-          policy = data.aws_iam_policy_document.this_terraform.json
-        }
-      }
-      conditions = merge(local.aws_github_audience, { "repo" = { test = "StringLike", variable = "token.actions.githubusercontent.com:sub", values = ["repo:FinLegal/infrastructure:*"] } })
-    }
+    #"terraform" = {
+    #  policies = {
+    #    "terraform" = {
+    #      policy = data.aws_iam_policy_document.this_terraform.json
+    #    }
+    #  }
+    #  conditions = merge(local.aws_github_audience, { "repo" = { test = "StringLike", variable = "token.actions.githubusercontent.com:sub", values = ["repo:FinLegal/infrastructure:*"] } })
+    #}
     ## case-definitions ##
-    "casesitedefinitions" = {
-      policies = {
-        "s3-casesites" = {
-          policy = data.aws_iam_policy_document.this_casesitedefinitions.json
-        }
-      }
-      conditions = merge(local.aws_github_audience, { "repo" = { test = "StringEquals", variable = "token.actions.githubusercontent.com:sub", values = ["repo:FinLegal/case-definitions:ref:refs/heads/main"] } })
-    }
+    #"casesitedefinitions" = {
+    #  policies = {
+    #    "s3-casesites" = {
+    #      policy = data.aws_iam_policy_document.this_casesitedefinitions.json
+    #    }
+    #  }
+    #  conditions = merge(local.aws_github_audience, { "repo" = { test = "StringEquals", variable = "token.actions.githubusercontent.com:sub", values = ["repo:FinLegal/case-definitions:ref:refs/heads/main"] } })
+    #}
     ## case-sites ##
     "casesites" = {
       policies = {
@@ -43,26 +42,26 @@ module "git" {
         "ecs" = {
           policy = data.aws_iam_policy_document.this_ecs.json
         }
-        "codedeploy-legacy" = {
-          policy = data.aws_iam_policy_document.this_casesites_legacy.json
-        }
+        #"codedeploy-legacy" = {
+        #  policy = data.aws_iam_policy_document.this_casesites_legacy.json
+        #}
       }
       conditions = merge(local.aws_github_audience, { "repo" = { test = "StringEquals", variable = "token.actions.githubusercontent.com:sub", values = ["repo:FinLegal/case-sites:ref:refs/heads/main", "repo:FinLegal/case-sites:ref:refs/heads/release-generic"] } })
     }
     ## casefunnel ##
-    "casefunnel" = {
-      policies = {
-        "ecr" = {
-          policy = data.aws_iam_policy_document.this_ecr_token.json
-        }
-        "codedeploy" = {
-          policy = data.aws_iam_policy_document.this_casefunnel.json
-        }
-        "ecs" = {
-          policy = data.aws_iam_policy_document.this_ecs.json
-        }
-      }
-      conditions = merge(local.aws_github_audience, { "repo" = { test = "StringEquals", variable = "token.actions.githubusercontent.com:sub", values = local.casefunnel_branch_list } })
-    }
+    #"casefunnel" = {
+    #  policies = {
+    #    "ecr" = {
+    #      policy = data.aws_iam_policy_document.this_ecr_token.json
+    #    }
+    #    "codedeploy" = {
+    #      policy = data.aws_iam_policy_document.this_casefunnel.json
+    #    }
+    #    "ecs" = {
+    #      policy = data.aws_iam_policy_document.this_ecs.json
+    #    }
+    #  }
+    #  conditions = merge(local.aws_github_audience, { "repo" = { test = "StringEquals", variable = "token.actions.githubusercontent.com:sub", values = local.casefunnel_branch_list } })
+    #}
   }
 }

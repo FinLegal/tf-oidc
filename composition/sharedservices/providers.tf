@@ -2,6 +2,6 @@ provider "aws" {
   region = "eu-west-2"
 
   default_tags {
-    tags = var.default_tags
+    tags = local.resource_tags
   }
 }

@@ -35,6 +35,9 @@ data "terraform_remote_state" "casesite_ecr" {
 ########################################
 
 locals {
+  ## Metadata ##
+  resource_tags = merge(var.default_tags, var.tags)
+
   ## GitHub OIDC ##
   aws_github_audience = {
     "token" = {
