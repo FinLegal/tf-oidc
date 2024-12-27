@@ -30,6 +30,18 @@ data "terraform_remote_state" "casesite_ecr" {
   }
 }
 
+data "terraform_remote_state" "claimsautomation_sharedservices" {
+  backend = "remote"
+
+  config = {
+    hostname     = "finlegal.scalr.io"
+    organization = data.scalr_current_run.this.environment_id
+    workspaces = {
+      name = "ClaimsAutomation-Shared-Services"
+    }
+  }
+}
+
 ########################################
 # Computed Variables
 ########################################
@@ -51,13 +63,13 @@ locals {
   #storybook_bucket           = data.terraform_remote_state.storybook.outputs.s3_arn
   #internal_docs_bucket       = "arn:aws:s3:::finlegal-internal"
   #public_docs_bucket         = "arn:aws:s3:::finlegal-docs"
-  #casesite_deployment_bucket = "arn:aws:s3:::generic-cases-deployments"
   #static_bucket              = "arn:aws:s3:::casefunnel-io-static"
 
   ## Casesites ##
-  casesite_ecr              = split("/", data.terraform_remote_state.casesite_ecr.outputs.aws_ecr_repository)
-  casesite_ecr_arn          = "arn:aws:ecr:${data.aws_region.this.name}:${data.aws_caller_identity.this.account_id}:repository/${local.casesite_ecr[1]}"
-  casesite_release_branches = ["main", "release-generic", "release-hf-trades", "release-kl-merc", "release-kl-vauxhall", "release-lsc-energy", "release-mb-floods", "lza"]
+  casesite_ecr               = split("/", data.terraform_remote_state.casesite_ecr.outputs.aws_ecr_repository)
+  casesite_ecr_arn           = "arn:aws:ecr:${data.aws_region.this.name}:${data.aws_caller_identity.this.account_id}:repository/${local.casesite_ecr[1]}"
+  casesite_release_branches  = ["main", "release-generic", "release-hf-trades", "release-kl-merc", "release-kl-vauxhall", "release-lsc-energy", "release-mb-floods", "lza"]
+  casesite_deployment_bucket = data.terraform_remote_state.claimsautomation_sharedservices.outputs.deployment_s3_arn
 
   ### Casefunnel ##
   #casefunnel_admin_ecr_arn      = "arn:aws:ecr:${data.aws_region.this.name}:${data.aws_caller_identity.this.account_id}:repository/casefunnel-admin"
@@ -151,20 +163,20 @@ locals {
 #  }
 #}
 
-#data "aws_iam_policy_document" "this_case_deployment" {
-#  statement {
-#    sid       = "AllowList"
-#    effect    = "Allow"
-#    actions   = ["s3:ListBucket"]
-#    resources = [local.casesite_deployment_bucket]
-#  }
-#  statement {
-#    sid       = "AllowPut"
-#    effect    = "Allow"
-#    actions   = ["s3:GetObject", "s3:PutObject", "s3:DeleteObject"]
-#    resources = ["${local.casesite_deployment_bucket}/*"]
-#  }
-#}
+data "aws_iam_policy_document" "this_case_deployment" {
+  statement {
+    sid       = "AllowList"
+    effect    = "Allow"
+    actions   = ["s3:ListBucket"]
+    resources = [local.casesite_deployment_bucket]
+  }
+  statement {
+    sid       = "AllowPut"
+    effect    = "Allow"
+    actions   = ["s3:GetObject", "s3:PutObject", "s3:DeleteObject"]
+    resources = ["${local.casesite_deployment_bucket}/*"]
+  }
+}
 
 #data "aws_iam_policy_document" "this_static_deployment" {
 #  statement {

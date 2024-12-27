@@ -22,14 +22,14 @@ module "git" {
     #  conditions = merge(local.aws_github_audience, { "repo" = { test = "StringLike", variable = "token.actions.githubusercontent.com:sub", values = ["repo:FinLegal/infrastructure:*"] } })
     #}
     ## case-definitions ##
-    #"casesitedefinitions" = {
-    #  policies = {
-    #    "s3-casesites" = {
-    #      policy = data.aws_iam_policy_document.this_casesitedefinitions.json
-    #    }
-    #  }
-    #  conditions = merge(local.aws_github_audience, { "repo" = { test = "StringEquals", variable = "token.actions.githubusercontent.com:sub", values = ["repo:FinLegal/case-definitions:ref:refs/heads/main"] } })
-    #}
+    "case-site-definitions" = {
+      policies = {
+        "s3-case-sites" = {
+          policy = data.aws_iam_policy_document.this_casesite_definitions.json
+        }
+      }
+      conditions = merge(local.aws_github_audience, { "repo" = { test = "StringEquals", variable = "token.actions.githubusercontent.com:sub", values = ["repo:FinLegal/case-definitions:ref:refs/heads/lza"] } })
+    }
     ## case-sites ##
     "case-sites" = {
       policies = {

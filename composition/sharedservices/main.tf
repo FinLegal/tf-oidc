@@ -49,14 +49,14 @@ module "git" {
     #  conditions = merge(local.aws_github_audience, { "repo" = { test = "StringEquals", variable = "token.actions.githubusercontent.com:sub", values = ["repo:FinLegal/docs:ref:refs/heads/main"] } })
     #}
     ## Case Site Deployments ##
-    #"cases" = {
-    #  policies = {
-    #    "s3" = {
-    #      policy = data.aws_iam_policy_document.this_case_deployment.json
-    #    }
-    #  }
-    #  conditions = merge(local.aws_github_audience, { "repo" = { test = "StringEquals", variable = "token.actions.githubusercontent.com:sub", values = ["repo:FinLegal/case-definitions:ref:refs/heads/main"] } })
-    #}
+    "cases" = {
+      policies = {
+        "s3" = {
+          policy = data.aws_iam_policy_document.this_case_deployment.json
+        }
+      }
+      conditions = merge(local.aws_github_audience, { "repo" = { test = "StringEquals", variable = "token.actions.githubusercontent.com:sub", values = ["repo:FinLegal/case-definitions:ref:refs/heads/main"] } })
+    }
     ## Static Content ##
     #"static" = {
     #  policies = {

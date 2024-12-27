@@ -36,8 +36,8 @@ locals {
   }
 
   ## Casesite Objects ##
-  #casesite_bucket        = data.terraform_remote_state.casesites.outputs.casesite_bucket
-  #casesite_static_bucket = data.terraform_remote_state.casesites.outputs.casesite_static_bucket
+  casesite_bucket         = data.terraform_remote_state.casesites.outputs.case_site_s3_arn
+  casesite_static_bucket  = data.terraform_remote_state.casesites.outputs.case_site_static_s3_arn
   casesite_execution_role = lookup(data.terraform_remote_state.casesites.outputs.task_data, "case-sites", {}).iam_execution_role_arn
   casesite_task_role      = lookup(data.terraform_remote_state.casesites.outputs.task_data, "case-sites", {}).iam_task_role_arn
 
@@ -97,20 +97,20 @@ locals {
 #  }
 #}
 
-#data "aws_iam_policy_document" "this_casesitedefinitions" {
-#  statement {
-#    sid       = "AllowList"
-#    effect    = "Allow"
-#    actions   = ["s3:ListBucket"]
-#    resources = [local.casesite_bucket, local.casesite_static_bucket]
-#  }
-#  statement {
-#    sid       = "AllowPut"
-#    effect    = "Allow"
-#    actions   = ["s3:GetObject", "s3:PutObject", "s3:DeleteObject"]
-#    resources = ["${local.casesite_bucket}/*", "${local.casesite_static_bucket}/*"]
-#  }
-#}
+data "aws_iam_policy_document" "this_casesite_definitions" {
+  statement {
+    sid       = "AllowList"
+    effect    = "Allow"
+    actions   = ["s3:ListBucket"]
+    resources = [local.casesite_bucket, local.casesite_static_bucket]
+  }
+  statement {
+    sid       = "AllowPut"
+    effect    = "Allow"
+    actions   = ["s3:GetObject", "s3:PutObject", "s3:DeleteObject"]
+    resources = ["${local.casesite_bucket}/*", "${local.casesite_static_bucket}/*"]
+  }
+}
 
 data "aws_iam_policy_document" "this_ecr_token" {
   statement {
