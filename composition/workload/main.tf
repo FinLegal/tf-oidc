@@ -28,7 +28,7 @@ module "git" {
           policy = data.aws_iam_policy_document.this_casesite_definitions.json
         }
       }
-      conditions = merge(local.aws_github_audience, { "repo" = { test = "StringEquals", variable = "token.actions.githubusercontent.com:sub", values = ["repo:FinLegal/case-definitions:ref:refs/heads/lza"] } })
+      conditions = merge(local.aws_github_audience, { "repo" = { test = "StringEquals", variable = "token.actions.githubusercontent.com:sub", values = ["repo:FinLegal/case-definitions:ref:refs/heads/lza-deploy"] } })
     }
     ## case-sites ##
     "case-sites" = {
@@ -46,7 +46,7 @@ module "git" {
         #  policy = data.aws_iam_policy_document.this_casesites_legacy.json
         #}
       }
-      conditions = merge(local.aws_github_audience, { "repo" = { test = "StringEquals", variable = "token.actions.githubusercontent.com:sub", values = ["repo:FinLegal/case-sites:ref:refs/heads/main", "repo:FinLegal/case-sites:ref:refs/heads/release-generic", "repo:FinLegal/case-sites:ref:refs/heads/lza"] } })
+      conditions = merge(local.aws_github_audience, { "repo" = { test = "StringEquals", variable = "token.actions.githubusercontent.com:sub", values = ["repo:FinLegal/case-sites:ref:refs/heads/main", "repo:FinLegal/case-sites:ref:refs/heads/release-generic", "repo:FinLegal/case-sites:ref:refs/heads/lza-deploy"] } })
     }
     ## casefunnel ##
     #"casefunnel" = {
