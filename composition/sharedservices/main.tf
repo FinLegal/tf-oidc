@@ -19,7 +19,7 @@ module "git" {
           policy = data.aws_iam_policy_document.this_case_deployment.json
         }
       }
-      conditions = merge(local.aws_github_audience, { "repo" = { test = "StringEquals", variable = "token.actions.githubusercontent.com:sub", values = ["repo:FinLegal/case-definitions:ref:refs/heads/lza-deploy"] } })
+      conditions = merge(local.aws_github_audience, { "repo" = { test = "StringEquals", variable = "token.actions.githubusercontent.com:sub", values = ["repo:FinLegal/case-definitions:ref:refs/heads/lza"] } })
     }
     ## Case Site ECR ##
     "case-site-ecr" = {
