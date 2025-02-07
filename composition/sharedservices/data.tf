@@ -74,7 +74,7 @@ locals {
   ## Casesites ##
   casesite_ecr               = split("/", data.terraform_remote_state.casesite_ecr.outputs.aws_ecr_repository)
   casesite_ecr_arn           = "arn:aws:ecr:${data.aws_region.this.name}:${data.aws_caller_identity.this.account_id}:repository/${local.casesite_ecr[1]}"
-  casesite_release_branches  = ["main", "release-generic", "lza-deploy"]
+  casesite_release_branches  = ["main", "release-generic"]
   casesite_deployment_bucket = data.terraform_remote_state.claimsautomation_sharedservices.outputs.deployment_s3_arn
 
   ## Search ##
