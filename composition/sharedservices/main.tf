@@ -39,5 +39,14 @@ module "git" {
       }
       conditions = merge(local.aws_github_audience, { "repo" = { test = "StringEquals", variable = "token.actions.githubusercontent.com:sub", values = ["repo:FinLegal/svc-search:ref:refs/heads/main"] } })
     }
+    ## Bootstrap Service ECR ##
+    "bootstrap-service-ecr" = {
+      policies = {
+        ecr = {
+          policy = data.aws_iam_policy_document.this_bootstrap_ecr.json
+        }
+      }
+      conditions = merge(local.aws_github_audience, { "repo" = { test = "StringEquals", variable = "token.actions.githubusercontent.com:sub", values = ["repo:FinLegal/svc-search:ref:refs/heads/main"] } })
+    }
   }
 }
