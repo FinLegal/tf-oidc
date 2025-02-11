@@ -159,7 +159,7 @@ data "aws_iam_policy_document" "this_search_ecr" {
   }
 }
 
-data "aws_iam_policy_document" "this_bootstrap_ecr" {
+data "aws_iam_policy_document" "this_csdef_ecr" {
   statement {
     sid       = "AllowAuthToken"
     effect    = "Allow"
