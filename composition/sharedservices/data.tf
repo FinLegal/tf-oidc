@@ -42,14 +42,14 @@ data "terraform_remote_state" "indexer_ecr" {
   }
 }
 
-data "terraform_remote_state" "bootstrap_ecr" {
+data "terraform_remote_state" "csdef_ecr" {
   backend = "remote"
 
   config = {
     hostname     = "finlegal.scalr.io"
     organization = data.scalr_current_run.this.environment_id
     workspaces = {
-      name = "ECR-Boostrap-service"
+      name = "ECR-Definition-service"
     }
   }
 }
@@ -94,8 +94,8 @@ locals {
   search_ecr_arn  = "arn:aws:ecr:${data.aws_region.this.name}:${data.aws_caller_identity.this.account_id}:repository/${local.search_ecr[1]}"
   indexer_ecr     = split("/", data.terraform_remote_state.indexer_ecr.outputs.aws_ecr_repository)
   indexer_ecr_arn = "arn:aws:ecr:${data.aws_region.this.name}:${data.aws_caller_identity.this.account_id}:repository/${local.indexer_ecr[1]}"
-  bootstrap_ecr      = split("/", data.terraform_remote_state.bootstrap_ecr.outputs.aws_ecr_repository)
-  bootstrap_ecr_arn  = "arn:aws:ecr:${data.aws_region.this.name}:${data.aws_caller_identity.this.account_id}:repository/${local.bootstrap_ecr[1]}"
+  csdef_ecr      = split("/", data.terraform_remote_state.csdef_ecr.outputs.aws_ecr_repository)
+  csdef_ecr_arn  = "arn:aws:ecr:${data.aws_region.this.name}:${data.aws_caller_identity.this.account_id}:repository/${local.csdef_ecr[1]}"
 }
 
 ########################################
@@ -176,6 +176,6 @@ data "aws_iam_policy_document" "this_csdef_ecr" {
       "ecr:InitiateLayerUpload",
       "ecr:PutImage"
     ]
-    resources = [local.bootstrap_ecr_arn]
+    resources = [local.csdef_ecr_arn]
   }
 }
