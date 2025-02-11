@@ -18,6 +18,18 @@ data "terraform_remote_state" "casesites" {
   }
 }
 
+data "terraform_remote_state" "appsupport" {
+  backend = "remote"
+
+  config = {
+    hostname     = "finlegal.scalr.io"
+    organization = data.scalr_current_run.this.environment_id
+    workspaces = {
+      name = "AppSupport"
+    }
+  }
+}
+
 ########################################
 # Computed Variables
 ########################################
@@ -40,6 +52,11 @@ locals {
   casesite_static_bucket  = data.terraform_remote_state.casesites.outputs.case_site_static_s3_arn
   casesite_execution_role = lookup(data.terraform_remote_state.casesites.outputs.task_data, "case-sites", {}).iam_execution_role_arn
   casesite_task_role      = lookup(data.terraform_remote_state.casesites.outputs.task_data, "case-sites", {}).iam_task_role_arn
+  search_execution_role   = lookup(data.terraform_remote_state.appsupport.outputs.search_task_data, "search", {}).iam_execution_role_arn
+  search_task_role      = lookup(data.terraform_remote_state.appsupport.outputs.search_task_data, "search", {}).iam_task_role_arn
+  indexing_execution_role   = lookup(data.terraform_remote_state.appsupport.outputs.indexing_task_data, "indexing", {}).iam_execution_role_arn
+  indexing_task_role      = lookup(data.terraform_remote_state.appsupport.outputs.indexing_task_data, "indexing", {}).iam_task_role_arn
+
 }
 
 ########################################
@@ -97,6 +114,28 @@ data "aws_iam_policy_document" "this_ecs" {
     sid       = "AllowECS"
     effect    = "Allow"
     actions   = ["ecs:RegisterTaskDefinition", "ecs:DescribeTaskDefinition", "ecs:DescribeServices"]
+    resources = ["*"]
+  }
+}
+
+data "aws_iam_policy_document" "this_search" {
+  statement {
+    sid       = "AllowCodeDeployPass"
+    effect    = "Allow"
+    actions   = ["iam:PassRole"]
+    resources = [local.search_execution_role, local.search_task_role, local.indexing_execution_role, local.indexing_task_role]
+  }
+  statement {
+    sid    = "GetDeployments"
+    effect = "Allow"
+    actions = [
+      "codedeploy:GetDeploymentConfig",
+      "codedeploy:GetDeployment",
+      "codedeploy:GetDeploymentConfig",
+      "codedeploy:GetDeploymentGroup",
+      "codedeploy:CreateDeployment",
+      "codedeploy:RegisterApplicationRevision",
+    ]
     resources = ["*"]
   }
 }
