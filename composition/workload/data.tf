@@ -2,8 +2,6 @@
 # Data Sources
 ########################################
 
-data "aws_region" "this" {}
-data "aws_caller_identity" "this" {}
 data "scalr_current_run" "this" {}
 
 data "terraform_remote_state" "casesites" {
