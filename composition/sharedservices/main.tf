@@ -48,5 +48,14 @@ module "git" {
       }
       conditions = merge(local.aws_github_audience, { "repo" = { test = "StringEquals", variable = "token.actions.githubusercontent.com:sub", values = ["repo:FinLegal/svc-search:ref:refs/heads/main"] } })
     }
+    ## API ECR ##
+    "api" = {
+      policies = {
+        ecr = {
+          policy = data.aws_iam_policy_document.this_api_ecr.json
+        }
+      }
+      conditions = merge(local.aws_github_audience, { "repo" = { test = "StringEquals", variable = "token.actions.githubusercontent.com:sub", values = ["repo:FinLegal/casefunnel:ref:refs/heads/dev", "repo:FinLegal/casefunnel:ref:refs/heads/master", "repo:FinLegal/casefunnel:ref:refs/heads/release"] } })
+    }
   }
 }
