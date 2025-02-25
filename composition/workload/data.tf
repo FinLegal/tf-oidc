@@ -51,8 +51,8 @@ locals {
   casesite_execution_role = lookup(data.terraform_remote_state.casesites.outputs.task_data, "case-sites", {}).iam_execution_role_arn
   casesite_task_role      = lookup(data.terraform_remote_state.casesites.outputs.task_data, "case-sites", {}).iam_task_role_arn
   search_execution_role   = lookup(data.terraform_remote_state.appsupport.outputs.search_task_data, "search", {}).iam_execution_role_arn
-  search_task_role      = lookup(data.terraform_remote_state.appsupport.outputs.search_task_data, "search", {}).iam_task_role_arn
-  indexing_execution_role   = lookup(data.terraform_remote_state.appsupport.outputs.indexing_task_data, "indexing", {}).iam_execution_role_arn
+  search_task_role        = lookup(data.terraform_remote_state.appsupport.outputs.search_task_data, "search", {}).iam_task_role_arn
+  indexing_execution_role = lookup(data.terraform_remote_state.appsupport.outputs.indexing_task_data, "indexing", {}).iam_execution_role_arn
   indexing_task_role      = lookup(data.terraform_remote_state.appsupport.outputs.indexing_task_data, "indexing", {}).iam_task_role_arn
 
 }
