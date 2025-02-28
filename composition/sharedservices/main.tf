@@ -46,7 +46,7 @@ module "git" {
           policy = data.aws_iam_policy_document.this_csdef_ecr.json
         }
       }
-      conditions = merge(local.aws_github_audience, { "repo" = { test = "StringEquals", variable = "token.actions.githubusercontent.com:sub", values = ["repo:FinLegal/svc-search:ref:refs/heads/main"] } })
+      conditions = merge(local.aws_github_audience, { "repo" = { test = "StringEquals", variable = "token.actions.githubusercontent.com:sub", values = ["repo:FinLegal/case-site-definition-service:ref:refs/heads/main"] } })
     }
     ## API ECR ##
     "api" = {
