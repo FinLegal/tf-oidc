@@ -48,13 +48,119 @@ data "terraform_remote_state" "core" {
 locals {
   ## Metadata ##
   resource_tags = merge(var.default_tags, var.tags)
-
+  geo_check     = var.default_tags["Environment"] == "Sydney" || var.default_tags["Environment"] == "Ohio"
+  name_suffix   = local.geo_check ? "-${var.default_tags["Environment"]}" : ""
   ## GitHub OIDC ##
   aws_github_audience = {
     "token" = {
       test     = "StringEquals"
       variable = "token.actions.githubusercontent.com:aud"
       values   = ["sts.amazonaws.com"]
+    }
+  }
+
+  ## Service Config ## 
+  service_config = {
+    "case-site-definitions${local.name_suffix}" = {
+      policies = {
+        "s3-case-sites" = {
+          policy = data.aws_iam_policy_document.this_casesite_definitions.json
+        }
+      }
+      conditions = merge(local.aws_github_audience, {
+        "repo" = {
+          test     = "StringEquals",
+          variable = "token.actions.githubusercontent.com:sub",
+          values   = ["repo:FinLegal/case-definitions:ref:refs/heads/main"]
+        }
+      })
+    }
+    "case-sites${local.name_suffix}" = {
+      policies = {
+        "ecr" = {
+          policy = data.aws_iam_policy_document.this_ecr_token.json
+        }
+        "codedeploy" = {
+          policy = data.aws_iam_policy_document.this_casesites.json
+        }
+        "ecs" = {
+          policy = data.aws_iam_policy_document.this_ecs.json
+        }
+      }
+      conditions = merge(local.aws_github_audience, {
+        "repo" = {
+          test     = "StringEquals",
+          variable = "token.actions.githubusercontent.com:sub",
+          values = [
+            "repo:FinLegal/case-sites:ref:refs/heads/main",
+            "repo:FinLegal/case-sites:ref:refs/heads/release-generic"
+          ]
+        }
+      })
+    }
+    "search-service${local.name_suffix}" = {
+      policies = {
+        "ecr" = {
+          policy = data.aws_iam_policy_document.this_ecr_token.json
+        }
+        "codedeploy" = {
+          policy = data.aws_iam_policy_document.this_search.json
+        }
+        "ecs" = {
+          policy = data.aws_iam_policy_document.this_ecs.json
+        }
+      }
+      conditions = merge(local.aws_github_audience, {
+        "repo" = {
+          test     = "StringEquals",
+          variable = "token.actions.githubusercontent.com:sub",
+          values   = ["repo:FinLegal/svc-search:ref:refs/heads/main"]
+        }
+      })
+    }
+    "api${local.name_suffix}" = {
+      policies = {
+        "ecr" = {
+          policy = data.aws_iam_policy_document.this_ecr_token.json
+        }
+        "codedeploy" = {
+          policy = data.aws_iam_policy_document.this_api.json
+        }
+        "ecs" = {
+          policy = data.aws_iam_policy_document.this_ecs.json
+        }
+      }
+      conditions = merge(local.aws_github_audience, {
+        "repo" = {
+          test     = "StringEquals",
+          variable = "token.actions.githubusercontent.com:sub",
+          values = [
+            "repo:FinLegal/casefunnel:ref:refs/heads/dev",
+            "repo:FinLegal/casefunnel:ref:refs/heads/master",
+            "repo:FinLegal/casefunnel:ref:refs/heads/release"
+          ]
+        }
+      })
+    }
+    "case-site-definition-service${local.name_suffix}" = {
+      policies = {
+        "ecr" = {
+          policy = data.aws_iam_policy_document.this_ecr_token.json
+        }
+        "codedeploy" = {
+          policy = data.aws_iam_policy_document.this_csdef.json
+        }
+        "ecs" = {
+          policy = data.aws_iam_policy_document.this_ecs.json
+        }
+      }
+      conditions = merge(local.aws_github_audience, {
+        "repo" = {
+          test     = "StringEquals",
+          variable = "token.actions.githubusercontent.com:sub",
+          values   = ["repo:FinLegal/case-definition-service:ref:refs/heads/main"]
+        }
+      })
     }
   }
 
