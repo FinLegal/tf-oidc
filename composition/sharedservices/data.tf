@@ -66,6 +66,54 @@ data "terraform_remote_state" "api_ecr" {
   }
 }
 
+data "terraform_remote_state" "userjobs_ecr" {
+  backend = "remote"
+
+  config = {
+    hostname     = "finlegal.scalr.io"
+    organization = data.scalr_current_run.this.environment_id
+    workspaces = {
+      name = "ECR-User-jobs"
+    }
+  }
+}
+
+data "terraform_remote_state" "systemjobs_ecr" {
+  backend = "remote"
+
+  config = {
+    hostname     = "finlegal.scalr.io"
+    organization = data.scalr_current_run.this.environment_id
+    workspaces = {
+      name = "ECR-System-jobs"
+    }
+  }
+}
+
+data "terraform_remote_state" "dashboard_ecr" {
+  backend = "remote"
+
+  config = {
+    hostname     = "finlegal.scalr.io"
+    organization = data.scalr_current_run.this.environment_id
+    workspaces = {
+      name = "ECR-Dashboard"
+    }
+  }
+}
+
+data "terraform_remote_state" "admin_ecr" {
+  backend = "remote"
+
+  config = {
+    hostname     = "finlegal.scalr.io"
+    organization = data.scalr_current_run.this.environment_id
+    workspaces = {
+      name = "ECR-Admin"
+    }
+  }
+}
+
 data "terraform_remote_state" "claimsautomation_sharedservices" {
   backend = "remote"
 
@@ -114,6 +162,22 @@ locals {
   ## API ##
   api_ecr     = split("/", data.terraform_remote_state.api_ecr.outputs.aws_ecr_repository)
   api_ecr_arn = "arn:aws:ecr:${data.aws_region.this.name}:${data.aws_caller_identity.this.account_id}:repository/${local.api_ecr[1]}"
+
+  ## System Jobs ##
+  systemjobs_ecr     = split("/", data.terraform_remote_state.systemjobs_ecr.outputs.aws_ecr_repository)
+  systemjobs_ecr_arn = "arn:aws:ecr:${data.aws_region.this.name}:${data.aws_caller_identity.this.account_id}:repository/${local.systemjobs_ecr[1]}"
+
+  ## User Jobs ##
+  userjobs_ecr     = split("/", data.terraform_remote_state.userjobs_ecr.outputs.aws_ecr_repository)
+  userjobs_ecr_arn = "arn:aws:ecr:${data.aws_region.this.name}:${data.aws_caller_identity.this.account_id}:repository/${local.userjobs_ecr[1]}"
+
+  ## Dashboard ##
+  dashboard_ecr     = split("/", data.terraform_remote_state.dashboard_ecr.outputs.aws_ecr_repository)
+  dashboard_ecr_arn = "arn:aws:ecr:${data.aws_region.this.name}:${data.aws_caller_identity.this.account_id}:repository/${local.dashboard_ecr[1]}"
+
+  ## Admin ##
+  admin_ecr     = split("/", data.terraform_remote_state.admin_ecr.outputs.aws_ecr_repository)
+  admin_ecr_arn = "arn:aws:ecr:${data.aws_region.this.name}:${data.aws_caller_identity.this.account_id}:repository/${local.admin_ecr[1]}"
 
 }
 
@@ -217,5 +281,89 @@ data "aws_iam_policy_document" "this_api_ecr" {
       "ecr:PutImage"
     ]
     resources = [local.api_ecr_arn]
+  }
+}
+
+data "aws_iam_policy_document" "this_systemjobs_ecr" {
+  statement {
+    sid       = "AllowAuthToken"
+    effect    = "Allow"
+    actions   = ["ecr:GetAuthorizationToken"]
+    resources = ["*"]
+  }
+  statement {
+    sid    = "AllowECR"
+    effect = "Allow"
+    actions = [
+      "ecr:BatchCheckLayerAvailability",
+      "ecr:CompleteLayerUpload",
+      "ecr:UploadLayerPart",
+      "ecr:InitiateLayerUpload",
+      "ecr:PutImage"
+    ]
+    resources = [local.systemjobs_ecr_arn]
+  }
+}
+
+data "aws_iam_policy_document" "this_userjobs_ecr" {
+  statement {
+    sid       = "AllowAuthToken"
+    effect    = "Allow"
+    actions   = ["ecr:GetAuthorizationToken"]
+    resources = ["*"]
+  }
+  statement {
+    sid    = "AllowECR"
+    effect = "Allow"
+    actions = [
+      "ecr:BatchCheckLayerAvailability",
+      "ecr:CompleteLayerUpload",
+      "ecr:UploadLayerPart",
+      "ecr:InitiateLayerUpload",
+      "ecr:PutImage"
+    ]
+    resources = [local.userjobs_ecr_arn]
+  }
+}
+
+data "aws_iam_policy_document" "this_dashboard_ecr" {
+  statement {
+    sid       = "AllowAuthToken"
+    effect    = "Allow"
+    actions   = ["ecr:GetAuthorizationToken"]
+    resources = ["*"]
+  }
+  statement {
+    sid    = "AllowECR"
+    effect = "Allow"
+    actions = [
+      "ecr:BatchCheckLayerAvailability",
+      "ecr:CompleteLayerUpload",
+      "ecr:UploadLayerPart",
+      "ecr:InitiateLayerUpload",
+      "ecr:PutImage"
+    ]
+    resources = [local.dashboard_ecr_arn]
+  }
+}
+
+data "aws_iam_policy_document" "this_admin_ecr" {
+  statement {
+    sid       = "AllowAuthToken"
+    effect    = "Allow"
+    actions   = ["ecr:GetAuthorizationToken"]
+    resources = ["*"]
+  }
+  statement {
+    sid    = "AllowECR"
+    effect = "Allow"
+    actions = [
+      "ecr:BatchCheckLayerAvailability",
+      "ecr:CompleteLayerUpload",
+      "ecr:UploadLayerPart",
+      "ecr:InitiateLayerUpload",
+      "ecr:PutImage"
+    ]
+    resources = [local.admin_ecr_arn]
   }
 }

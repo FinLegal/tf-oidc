@@ -55,7 +55,43 @@ module "git" {
           policy = data.aws_iam_policy_document.this_api_ecr.json
         }
       }
-      conditions = merge(local.aws_github_audience, { "repo" = { test = "StringEquals", variable = "token.actions.githubusercontent.com:sub", values = ["repo:FinLegal/casefunnel:ref:refs/heads/dev", "repo:FinLegal/casefunnel:ref:refs/heads/master", "repo:FinLegal/casefunnel:ref:refs/heads/release"] } })
+      conditions = merge(local.aws_github_audience, { "repo" = { test = "StringEquals", variable = "token.actions.githubusercontent.com:sub", values = ["repo:FinLegal/casefunnel:ref:refs/heads/lza", "repo:FinLegal/casefunnel:ref:refs/heads/master", "repo:FinLegal/casefunnel:ref:refs/heads/release"] } })
+    }
+    ## UserJobs ECR ##
+    "user-jobs" = {
+      policies = {
+        ecr = {
+          policy = data.aws_iam_policy_document.this_userjobs_ecr.json
+        }
+      }
+      conditions = merge(local.aws_github_audience, { "repo" = { test = "StringEquals", variable = "token.actions.githubusercontent.com:sub", values = ["repo:FinLegal/casefunnel:ref:refs/heads/lza", "repo:FinLegal/casefunnel:ref:refs/heads/master", "repo:FinLegal/casefunnel:ref:refs/heads/release"] } })
+    }
+    ## SystemJobs ECR ##
+    "system-jobs" = {
+      policies = {
+        ecr = {
+          policy = data.aws_iam_policy_document.this_systemjobs_ecr.json
+        }
+      }
+      conditions = merge(local.aws_github_audience, { "repo" = { test = "StringEquals", variable = "token.actions.githubusercontent.com:sub", values = ["repo:FinLegal/casefunnel:ref:refs/heads/lza", "repo:FinLegal/casefunnel:ref:refs/heads/master", "repo:FinLegal/casefunnel:ref:refs/heads/release"] } })
+    }
+    ## Dashboard ECR ##
+    "dashboard" = {
+      policies = {
+        ecr = {
+          policy = data.aws_iam_policy_document.this_dashboard_ecr.json
+        }
+      }
+      conditions = merge(local.aws_github_audience, { "repo" = { test = "StringEquals", variable = "token.actions.githubusercontent.com:sub", values = ["repo:FinLegal/casefunnel:ref:refs/heads/lza", "repo:FinLegal/casefunnel:ref:refs/heads/master", "repo:FinLegal/casefunnel:ref:refs/heads/release"] } })
+    }
+    ## Admin ECR ##
+    "admin" = {
+      policies = {
+        ecr = {
+          policy = data.aws_iam_policy_document.this_admin_ecr.json
+        }
+      }
+      conditions = merge(local.aws_github_audience, { "repo" = { test = "StringEquals", variable = "token.actions.githubusercontent.com:sub", values = ["repo:FinLegal/casefunnel:ref:refs/heads/lza", "repo:FinLegal/casefunnel:ref:refs/heads/master", "repo:FinLegal/casefunnel:ref:refs/heads/release"] } })
     }
   }
 }
