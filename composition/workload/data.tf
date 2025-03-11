@@ -162,6 +162,86 @@ locals {
         }
       })
     }
+    "admin-web${local.name_suffix}" = {
+      policies = {
+        "ecr" = {
+          policy = data.aws_iam_policy_document.this_ecr_token.json
+        }
+        "codedeploy" = {
+          policy = data.aws_iam_policy_document.this_admin.json
+        }
+        "ecs" = {
+          policy = data.aws_iam_policy_document.this_ecs.json
+        }
+      }
+      conditions = merge(local.aws_github_audience, {
+        "repo" = {
+          test     = "StringEquals",
+          variable = "token.actions.githubusercontent.com:sub",
+          values   = ["repo:FinLegal/casefunnel:ref:refs/heads/lza"]
+        }
+      })
+    }
+    "dashboard-web${local.name_suffix}" = {
+      policies = {
+        "ecr" = {
+          policy = data.aws_iam_policy_document.this_ecr_token.json
+        }
+        "codedeploy" = {
+          policy = data.aws_iam_policy_document.this_dashboard.json
+        }
+        "ecs" = {
+          policy = data.aws_iam_policy_document.this_ecs.json
+        }
+      }
+      conditions = merge(local.aws_github_audience, {
+        "repo" = {
+          test     = "StringEquals",
+          variable = "token.actions.githubusercontent.com:sub",
+          values   = ["repo:FinLegal/casefunnel:ref:refs/heads/lza"]
+        }
+      })
+    }
+    "user-jobs${local.name_suffix}" = {
+      policies = {
+        "ecr" = {
+          policy = data.aws_iam_policy_document.this_ecr_token.json
+        }
+        "codedeploy" = {
+          policy = data.aws_iam_policy_document.this_userjobs.json
+        }
+        "ecs" = {
+          policy = data.aws_iam_policy_document.this_ecs.json
+        }
+      }
+      conditions = merge(local.aws_github_audience, {
+        "repo" = {
+          test     = "StringEquals",
+          variable = "token.actions.githubusercontent.com:sub",
+          values   = ["repo:FinLegal/casefunnel:ref:refs/heads/lza"]
+        }
+      })
+    }
+    "system-jobs${local.name_suffix}" = {
+      policies = {
+        "ecr" = {
+          policy = data.aws_iam_policy_document.this_ecr_token.json
+        }
+        "codedeploy" = {
+          policy = data.aws_iam_policy_document.this_systemjobs.json
+        }
+        "ecs" = {
+          policy = data.aws_iam_policy_document.this_ecs.json
+        }
+      }
+      conditions = merge(local.aws_github_audience, {
+        "repo" = {
+          test     = "StringEquals",
+          variable = "token.actions.githubusercontent.com:sub",
+          values   = ["repo:FinLegal/casefunnel:ref:refs/heads/lza"]
+        }
+      })
+    }
   }
 
   ## Casesite Objects ##
@@ -179,6 +259,14 @@ locals {
   internal_api_task_role      = lookup(data.terraform_remote_state.core.outputs.api_task_data, "internal-api", {}).iam_task_role_arn
   public_api_execution_role   = lookup(data.terraform_remote_state.core.outputs.api_task_data, "public-api", {}).iam_execution_role_arn
   public_api_task-role        = lookup(data.terraform_remote_state.core.outputs.api_task_data, "public-api", {}).iam_task_role_arn
+  admin_execution_role        = lookup(data.terraform_remote_state.core.outputs.web_task_data, "admin-web", {}).iam_execution_role_arn
+  admin_task_role             = lookup(data.terraform_remote_state.core.outputs.web_task_data, "admin-web", {}).iam_task_role_arn
+  dashboard_execution_role    = lookup(data.terraform_remote_state.core.outputs.web_task_data, "dashboard-web", {}).iam_execution_role_arn
+  dashboard_task_role         = lookup(data.terraform_remote_state.core.outputs.web_task_data, "dashboard-web", {}).iam_task_role_arn
+  userjobs_execution_role     = lookup(data.terraform_remote_state.core.outputs.hangfire_task_data, "user-jobs", {}).iam_execution_role_arn
+  userjobs_task_role          = lookup(data.terraform_remote_state.core.outputs.hangfire_task_data, "user-jobs", {}).iam_task_role_arn
+  systemjobs_execution_role   = lookup(data.terraform_remote_state.core.outputs.hangfire_task_data, "system-jobs", {}).iam_execution_role_arn
+  systemjobs_task_role        = lookup(data.terraform_remote_state.core.outputs.hangfire_task_data, "system-jobs", {}).iam_task_role_arn
 }
 
 ########################################
@@ -290,6 +378,94 @@ data "aws_iam_policy_document" "this_csdef" {
     effect    = "Allow"
     actions   = ["iam:PassRole"]
     resources = [local.csdef_execution_role, local.csdef_task_role]
+  }
+  statement {
+    sid    = "GetDeployments"
+    effect = "Allow"
+    actions = [
+      "codedeploy:GetDeploymentConfig",
+      "codedeploy:GetDeployment",
+      "codedeploy:GetDeploymentConfig",
+      "codedeploy:GetDeploymentGroup",
+      "codedeploy:CreateDeployment",
+      "codedeploy:RegisterApplicationRevision",
+    ]
+    resources = ["*"]
+  }
+}
+
+data "aws_iam_policy_document" "this_admin" {
+  statement {
+    sid       = "AllowCodeDeployPass"
+    effect    = "Allow"
+    actions   = ["iam:PassRole"]
+    resources = [local.admin_execution_role, local.admin_task_role]
+  }
+  statement {
+    sid    = "GetDeployments"
+    effect = "Allow"
+    actions = [
+      "codedeploy:GetDeploymentConfig",
+      "codedeploy:GetDeployment",
+      "codedeploy:GetDeploymentConfig",
+      "codedeploy:GetDeploymentGroup",
+      "codedeploy:CreateDeployment",
+      "codedeploy:RegisterApplicationRevision",
+    ]
+    resources = ["*"]
+  }
+}
+
+data "aws_iam_policy_document" "this_dashboard" {
+  statement {
+    sid       = "AllowCodeDeployPass"
+    effect    = "Allow"
+    actions   = ["iam:PassRole"]
+    resources = [local.dashboard_execution_role, local.dashboard_task_role]
+  }
+  statement {
+    sid    = "GetDeployments"
+    effect = "Allow"
+    actions = [
+      "codedeploy:GetDeploymentConfig",
+      "codedeploy:GetDeployment",
+      "codedeploy:GetDeploymentConfig",
+      "codedeploy:GetDeploymentGroup",
+      "codedeploy:CreateDeployment",
+      "codedeploy:RegisterApplicationRevision",
+    ]
+    resources = ["*"]
+  }
+}
+
+data "aws_iam_policy_document" "this_userjobs" {
+  statement {
+    sid       = "AllowCodeDeployPass"
+    effect    = "Allow"
+    actions   = ["iam:PassRole"]
+    resources = [local.userjobs_execution_role, local.userjobs_task_role]
+  }
+  statement {
+    sid    = "GetDeployments"
+    effect = "Allow"
+    actions = [
+      "codedeploy:GetDeploymentConfig",
+      "codedeploy:GetDeployment",
+      "codedeploy:GetDeploymentConfig",
+      "codedeploy:GetDeploymentGroup",
+      "codedeploy:CreateDeployment",
+      "codedeploy:RegisterApplicationRevision",
+    ]
+    resources = ["*"]
+  }
+}
+
+data "aws_iam_policy_document" "this_systemjobs" {
+  statement {
+    sid       = "AllowCodeDeployPass"
+    effect    = "Allow"
+    actions   = ["iam:PassRole"]
+    resources = [local.systemjobs_execution_role, local.systemjobs_task_role]
   }
   statement {
     sid    = "GetDeployments"
