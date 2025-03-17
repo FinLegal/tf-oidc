@@ -47,9 +47,12 @@ data "terraform_remote_state" "core" {
 
 locals {
   ## Metadata ##
-  resource_tags = merge(var.default_tags, var.tags)
-  geo_check     = var.default_tags["Environment"] == "Sydney" || var.default_tags["Environment"] == "Ohio"
-  name_suffix   = local.geo_check ? "-${var.default_tags["Environment"]}" : ""
+  resource_tags        = merge(var.default_tags, var.tags)
+  geo_check            = var.default_tags["Environment"] == "Sydney" || var.default_tags["Environment"] == "Ohio"
+  name_suffix          = local.geo_check ? "-${var.default_tags["Environment"]}" : ""
+  core_deploy_branches = ["repo:FinLegal/casefunnel:ref:refs/heads/dev", "repo:FinLegal/casefunnel-deployments:ref:refs/heads/master", "repo:FinLegal/casefunnel:ref:refs/heads/lza"]
+
+
   ## GitHub OIDC ##
   aws_github_audience = {
     "token" = {
@@ -178,7 +181,7 @@ locals {
         "repo" = {
           test     = "StringEquals",
           variable = "token.actions.githubusercontent.com:sub",
-          values   = ["repo:FinLegal/casefunnel:ref:refs/heads/lza"]
+          values   = local.core_deploy_branches
         }
       })
     }
@@ -198,7 +201,7 @@ locals {
         "repo" = {
           test     = "StringEquals",
           variable = "token.actions.githubusercontent.com:sub",
-          values   = ["repo:FinLegal/casefunnel:ref:refs/heads/lza"]
+          values   = local.core_deploy_branches
         }
       })
     }
@@ -218,7 +221,7 @@ locals {
         "repo" = {
           test     = "StringEquals",
           variable = "token.actions.githubusercontent.com:sub",
-          values   = ["repo:FinLegal/casefunnel:ref:refs/heads/lza"]
+          values   = local.core_deploy_branches
         }
       })
     }
@@ -238,7 +241,7 @@ locals {
         "repo" = {
           test     = "StringEquals",
           variable = "token.actions.githubusercontent.com:sub",
-          values   = ["repo:FinLegal/casefunnel:ref:refs/heads/lza"]
+          values   = local.core_deploy_branches
         }
       })
     }
