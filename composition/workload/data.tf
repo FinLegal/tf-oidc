@@ -50,7 +50,7 @@ locals {
   resource_tags        = merge(var.default_tags, var.tags)
   geo_check            = var.default_tags["Environment"] == "Sydney" || var.default_tags["Environment"] == "Ohio"
   name_suffix          = local.geo_check ? "-${var.default_tags["Environment"]}" : ""
-  core_deploy_branches = ["repo:FinLegal/casefunnel:ref:refs/heads/dev", "repo:FinLegal/casefunnel-deployments:ref:refs/heads/master", "repo:FinLegal/casefunnel:ref:refs/heads/lza"]
+  core_deploy_branches = ["repo:FinLegal/casefunnel:ref:refs/heads/dev", "repo:FinLegal/casefunnel-deployments:ref:refs/heads/master"]
 
 
   ## GitHub OIDC ##
@@ -137,11 +137,7 @@ locals {
         "repo" = {
           test     = "StringEquals",
           variable = "token.actions.githubusercontent.com:sub",
-          values = [
-            "repo:FinLegal/casefunnel:ref:refs/heads/dev",
-            "repo:FinLegal/casefunnel:ref:refs/heads/master",
-            "repo:FinLegal/casefunnel:ref:refs/heads/release"
-          ]
+          values   = local.core_deploy_branches
         }
       })
     }
