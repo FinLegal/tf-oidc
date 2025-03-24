@@ -114,6 +114,18 @@ data "terraform_remote_state" "admin_ecr" {
   }
 }
 
+data "terraform_remote_state" "background_jobs_ecr" {
+  backend = "remote"
+
+  config = {
+    hostname     = "finlegal.scalr.io"
+    organization = data.scalr_current_run.this.environment_id
+    workspaces = {
+      name = "ECR-Background-jobs"
+    }
+  }
+}
+
 data "terraform_remote_state" "claimsautomation_sharedservices" {
   backend = "remote"
 
@@ -180,6 +192,9 @@ locals {
   admin_ecr     = split("/", data.terraform_remote_state.admin_ecr.outputs.aws_ecr_repository)
   admin_ecr_arn = "arn:aws:ecr:${data.aws_region.this.name}:${data.aws_caller_identity.this.account_id}:repository/${local.admin_ecr[1]}"
 
+  ## Background jobs ##
+  background_jobs_ecr     = split("/", data.terraform_remote_state.background_jobs_ecr.outputs.aws_ecr_repository)
+  background_jobs_ecr_arn = "arn:aws:ecr:${data.aws_region.this.name}:${data.aws_caller_identity.this.account_id}:repository/${local.background_jobs_ecr[1]}"
 }
 
 ########################################
@@ -366,5 +381,26 @@ data "aws_iam_policy_document" "this_admin_ecr" {
       "ecr:PutImage"
     ]
     resources = [local.admin_ecr_arn]
+  }
+}
+
+data "aws_iam_policy_document" "this_background_jobs_ecr" {
+  statement {
+    sid       = "AllowAuthToken"
+    effect    = "Allow"
+    actions   = ["ecr:GetAuthorizationToken"]
+    resources = ["*"]
+  }
+  statement {
+    sid    = "AllowECR"
+    effect = "Allow"
+    actions = [
+      "ecr:BatchCheckLayerAvailability",
+      "ecr:CompleteLayerUpload",
+      "ecr:UploadLayerPart",
+      "ecr:InitiateLayerUpload",
+      "ecr:PutImage"
+    ]
+    resources = [local.background_jobs_ecr_arn]
   }
 }

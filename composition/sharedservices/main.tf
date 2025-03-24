@@ -93,5 +93,14 @@ module "git" {
       }
       conditions = merge(local.aws_github_audience, { "repo" = { test = "StringEquals", variable = "token.actions.githubusercontent.com:sub", values = local.core_ecr_branches } })
     }
+    ## Background Jobs ECR ##
+    "background-jobs" = {
+      policies = {
+        ecr = {
+          policy = data.aws_iam_policy_document.this_background_jobs_ecr.json
+        }
+      }
+      conditions = merge(local.aws_github_audience, { "repo" = { test = "StringEquals", variable = "token.actions.githubusercontent.com:sub", values = ["repo:FinLegal/svc-background-jobs:ref:refs/heads/master"] } })
+    }
   }
 }
