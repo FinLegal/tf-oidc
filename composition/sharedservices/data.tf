@@ -133,7 +133,7 @@ data "terraform_remote_state" "claimsautomation_sharedservices" {
 locals {
   ## Metadata ##
   resource_tags     = merge(var.default_tags, var.tags)
-  core_ecr_branches = ["repo:FinLegal/casefunnel:ref:refs/heads/dev", "repo:FinLegal/casefunnel:ref:refs/heads/master"]
+  core_ecr_branches = ["repo:FinLegal/casefunnel:ref:refs/heads/dev", "repo:FinLegal/casefunnel:ref:refs/heads/master", "repo:FinLegal/casefunnel:ref:refs/heads/release"]
 
   ## GitHub OIDC ##
   aws_github_audience = {
