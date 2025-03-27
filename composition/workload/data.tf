@@ -286,8 +286,8 @@ locals {
   userjobs_task_role            = lookup(data.terraform_remote_state.core.outputs.hangfire_task_data, "user-jobs", {}).iam_task_role_arn
   systemjobs_execution_role     = lookup(data.terraform_remote_state.core.outputs.hangfire_task_data, "system-jobs", {}).iam_execution_role_arn
   systemjobs_task_role          = lookup(data.terraform_remote_state.core.outputs.hangfire_task_data, "system-jobs", {}).iam_task_role_arn
-  backgroundjobs_execution_role = lookup(data.terraform_remote_state.appsupport.outputs.background_task_data, "background-jobs", {}).iam_execution_role_arn
-  backgroundjobs_task_role      = lookup(data.terraform_remote_state.appsupport.outputs.background_task_data, "background-jobs", {}).iam_task_role_arn
+  backgroundjobs_execution_role = lookup(data.terraform_remote_state.appsupport.outputs.background_jobs_task_data, "background-jobs", {}).iam_execution_role_arn
+  backgroundjobs_task_role      = lookup(data.terraform_remote_state.appsupport.outputs.background_jobs_task_data, "background-jobs", {}).iam_task_role_arn
 }
 
 ########################################
