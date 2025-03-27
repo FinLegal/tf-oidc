@@ -241,31 +241,53 @@ locals {
         }
       })
     }
+    "background-jobs${local.name_suffix}" = {
+      policies = {
+        "ecr" = {
+          policy = data.aws_iam_policy_document.this_ecr_token.json
+        }
+        "codedeploy" = {
+          policy = data.aws_iam_policy_document.this_backgroundjobs.json
+        }
+        "ecs" = {
+          policy = data.aws_iam_policy_document.this_ecs.json
+        }
+      }
+      conditions = merge(local.aws_github_audience, {
+        "repo" = {
+          test     = "StringEquals",
+          variable = "token.actions.githubusercontent.com:sub",
+          values   = ["repo:FinLegal/svc-background-jobs:ref:refs/heads/master"]
+        }
+      })
+    }
   }
 
   ## Casesite Objects ##
-  casesite_bucket             = data.terraform_remote_state.casesites.outputs.case_site_s3_arn
-  casesite_static_bucket      = data.terraform_remote_state.casesites.outputs.case_site_static_s3_arn
-  casesite_execution_role     = lookup(data.terraform_remote_state.casesites.outputs.task_data, "case-sites", {}).iam_execution_role_arn
-  casesite_task_role          = lookup(data.terraform_remote_state.casesites.outputs.task_data, "case-sites", {}).iam_task_role_arn
-  csdef_execution_role        = lookup(data.terraform_remote_state.casesites.outputs.csdef_task_data, "cs-definitions", {}).iam_execution_role_arn
-  csdef_task_role             = lookup(data.terraform_remote_state.casesites.outputs.csdef_task_data, "cs-definitions", {}).iam_task_role_arn
-  search_execution_role       = lookup(data.terraform_remote_state.appsupport.outputs.search_task_data, "search", {}).iam_execution_role_arn
-  search_task_role            = lookup(data.terraform_remote_state.appsupport.outputs.search_task_data, "search", {}).iam_task_role_arn
-  indexing_execution_role     = lookup(data.terraform_remote_state.appsupport.outputs.indexing_task_data, "indexing", {}).iam_execution_role_arn
-  indexing_task_role          = lookup(data.terraform_remote_state.appsupport.outputs.indexing_task_data, "indexing", {}).iam_task_role_arn
-  internal_api_execution_role = lookup(data.terraform_remote_state.core.outputs.api_task_data, "internal-api", {}).iam_execution_role_arn
-  internal_api_task_role      = lookup(data.terraform_remote_state.core.outputs.api_task_data, "internal-api", {}).iam_task_role_arn
-  public_api_execution_role   = lookup(data.terraform_remote_state.core.outputs.api_task_data, "public-api", {}).iam_execution_role_arn
-  public_api_task-role        = lookup(data.terraform_remote_state.core.outputs.api_task_data, "public-api", {}).iam_task_role_arn
-  admin_execution_role        = lookup(data.terraform_remote_state.core.outputs.web_task_data, "admin-web", {}).iam_execution_role_arn
-  admin_task_role             = lookup(data.terraform_remote_state.core.outputs.web_task_data, "admin-web", {}).iam_task_role_arn
-  dashboard_execution_role    = lookup(data.terraform_remote_state.core.outputs.web_task_data, "dashboard-web", {}).iam_execution_role_arn
-  dashboard_task_role         = lookup(data.terraform_remote_state.core.outputs.web_task_data, "dashboard-web", {}).iam_task_role_arn
-  userjobs_execution_role     = lookup(data.terraform_remote_state.core.outputs.hangfire_task_data, "user-jobs", {}).iam_execution_role_arn
-  userjobs_task_role          = lookup(data.terraform_remote_state.core.outputs.hangfire_task_data, "user-jobs", {}).iam_task_role_arn
-  systemjobs_execution_role   = lookup(data.terraform_remote_state.core.outputs.hangfire_task_data, "system-jobs", {}).iam_execution_role_arn
-  systemjobs_task_role        = lookup(data.terraform_remote_state.core.outputs.hangfire_task_data, "system-jobs", {}).iam_task_role_arn
+  casesite_bucket               = data.terraform_remote_state.casesites.outputs.case_site_s3_arn
+  casesite_static_bucket        = data.terraform_remote_state.casesites.outputs.case_site_static_s3_arn
+  casesite_execution_role       = lookup(data.terraform_remote_state.casesites.outputs.task_data, "case-sites", {}).iam_execution_role_arn
+  casesite_task_role            = lookup(data.terraform_remote_state.casesites.outputs.task_data, "case-sites", {}).iam_task_role_arn
+  csdef_execution_role          = lookup(data.terraform_remote_state.casesites.outputs.csdef_task_data, "cs-definitions", {}).iam_execution_role_arn
+  csdef_task_role               = lookup(data.terraform_remote_state.casesites.outputs.csdef_task_data, "cs-definitions", {}).iam_task_role_arn
+  search_execution_role         = lookup(data.terraform_remote_state.appsupport.outputs.search_task_data, "search", {}).iam_execution_role_arn
+  search_task_role              = lookup(data.terraform_remote_state.appsupport.outputs.search_task_data, "search", {}).iam_task_role_arn
+  indexing_execution_role       = lookup(data.terraform_remote_state.appsupport.outputs.indexing_task_data, "indexing", {}).iam_execution_role_arn
+  indexing_task_role            = lookup(data.terraform_remote_state.appsupport.outputs.indexing_task_data, "indexing", {}).iam_task_role_arn
+  internal_api_execution_role   = lookup(data.terraform_remote_state.core.outputs.api_task_data, "internal-api", {}).iam_execution_role_arn
+  internal_api_task_role        = lookup(data.terraform_remote_state.core.outputs.api_task_data, "internal-api", {}).iam_task_role_arn
+  public_api_execution_role     = lookup(data.terraform_remote_state.core.outputs.api_task_data, "public-api", {}).iam_execution_role_arn
+  public_api_task-role          = lookup(data.terraform_remote_state.core.outputs.api_task_data, "public-api", {}).iam_task_role_arn
+  admin_execution_role          = lookup(data.terraform_remote_state.core.outputs.web_task_data, "admin-web", {}).iam_execution_role_arn
+  admin_task_role               = lookup(data.terraform_remote_state.core.outputs.web_task_data, "admin-web", {}).iam_task_role_arn
+  dashboard_execution_role      = lookup(data.terraform_remote_state.core.outputs.web_task_data, "dashboard-web", {}).iam_execution_role_arn
+  dashboard_task_role           = lookup(data.terraform_remote_state.core.outputs.web_task_data, "dashboard-web", {}).iam_task_role_arn
+  userjobs_execution_role       = lookup(data.terraform_remote_state.core.outputs.hangfire_task_data, "user-jobs", {}).iam_execution_role_arn
+  userjobs_task_role            = lookup(data.terraform_remote_state.core.outputs.hangfire_task_data, "user-jobs", {}).iam_task_role_arn
+  systemjobs_execution_role     = lookup(data.terraform_remote_state.core.outputs.hangfire_task_data, "system-jobs", {}).iam_execution_role_arn
+  systemjobs_task_role          = lookup(data.terraform_remote_state.core.outputs.hangfire_task_data, "system-jobs", {}).iam_task_role_arn
+  backgroundjobs_execution_role = lookup(data.terraform_remote_state.appsupport.outputs.background_task_data, "background-jobs", {}).iam_execution_role_arn
+  backgroundjobs_task_role      = lookup(data.terraform_remote_state.appsupport.outputs.background_task_data, "background-jobs", {}).iam_task_role_arn
 }
 
 ########################################
@@ -465,6 +487,28 @@ data "aws_iam_policy_document" "this_systemjobs" {
     effect    = "Allow"
     actions   = ["iam:PassRole"]
     resources = [local.systemjobs_execution_role, local.systemjobs_task_role]
+  }
+  statement {
+    sid    = "GetDeployments"
+    effect = "Allow"
+    actions = [
+      "codedeploy:GetDeploymentConfig",
+      "codedeploy:GetDeployment",
+      "codedeploy:GetDeploymentConfig",
+      "codedeploy:GetDeploymentGroup",
+      "codedeploy:CreateDeployment",
+      "codedeploy:RegisterApplicationRevision",
+    ]
+    resources = ["*"]
+  }
+}
+
+data "aws_iam_policy_document" "this_backgroundjobs" {
+  statement {
+    sid       = "AllowCodeDeployPass"
+    effect    = "Allow"
+    actions   = ["iam:PassRole"]
+    resources = [local.backgroundjobs_execution_role, local.backgroundjobs_task_role]
   }
   statement {
     sid    = "GetDeployments"
