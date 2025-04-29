@@ -226,7 +226,7 @@ locals {
 
   ## Agent Email Classifier ECR ##
   agent_email_classifier_ecr     = split("/", data.terraform_remote_state.agent_email_classifier_ecr.outputs.aws_ecr_repository)
-  claim_status_ecr_arn = "arn:aws:ecr:${data.aws_region.this.name}:${data.aws_caller_identity.this.account_id}:repository/${local.agent_email_classifier_ecr[1]}"
+  agent_email_classifier_ecr_arn = "arn:aws:ecr:${data.aws_region.this.name}:${data.aws_caller_identity.this.account_id}:repository/${local.agent_email_classifier_ecr[1]}"
 }
 
 ########################################
@@ -475,6 +475,6 @@ data "aws_iam_policy_document" "this_emailclassifier_ecr" {
       "ecr:InitiateLayerUpload",
       "ecr:PutImage"
     ]
-    resources = [local.agent_email_classifier_ecr]
+    resources = [local.agent_email_classifier_ecr_arn]
   }
 }
