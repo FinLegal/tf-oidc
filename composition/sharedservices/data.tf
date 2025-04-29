@@ -138,6 +138,30 @@ data "terraform_remote_state" "claimsautomation_sharedservices" {
   }
 }
 
+data "terraform_remote_state" "apply_claim_status_ecr" {
+  backend = "remote"
+
+  config = {
+    hostname     = "finlegal.scalr.io"
+    organization = data.scalr_current_run.this.environment_id
+    workspaces = {
+      name = "ECR-Apply-claim-status"
+    }
+  }
+}
+
+data "terraform_remote_state" "agent_email_classifier_ecr" {
+  backend = "remote"
+
+  config = {
+    hostname     = "finlegal.scalr.io"
+    organization = data.scalr_current_run.this.environment_id
+    workspaces = {
+      name = "ECR-Agent-email-classifier"
+    }
+  }
+}
+
 ########################################
 # Computed Variables
 ########################################
@@ -195,6 +219,14 @@ locals {
   ## Background jobs ##
   background_jobs_ecr     = split("/", data.terraform_remote_state.background_jobs_ecr.outputs.aws_ecr_repository)
   background_jobs_ecr_arn = "arn:aws:ecr:${data.aws_region.this.name}:${data.aws_caller_identity.this.account_id}:repository/${local.background_jobs_ecr[1]}"
+
+  ## Claim Status ECR ##
+  claim_status_ecr     = split("/", data.terraform_remote_state.apply_claim_status_ecr.outputs.aws_ecr_repository)
+  claim_status_ecr_arn = "arn:aws:ecr:${data.aws_region.this.name}:${data.aws_caller_identity.this.account_id}:repository/${local.claim_status_ecr[1]}"
+
+  ## Agent Email Classifier ECR ##
+  agent_email_classifier_ecr     = split("/", data.terraform_remote_state.agent_email_classifier_ecr.outputs.aws_ecr_repository)
+  claim_status_ecr_arn = "arn:aws:ecr:${data.aws_region.this.name}:${data.aws_caller_identity.this.account_id}:repository/${local.agent_email_classifier_ecr[1]}"
 }
 
 ########################################
@@ -402,5 +434,47 @@ data "aws_iam_policy_document" "this_background_jobs_ecr" {
       "ecr:PutImage"
     ]
     resources = [local.background_jobs_ecr_arn]
+  }
+}
+
+data "aws_iam_policy_document" "this_claimstatus_ecr" {
+  statement {
+    sid       = "AllowAuthToken"
+    effect    = "Allow"
+    actions   = ["ecr:GetAuthorizationToken"]
+    resources = ["*"]
+  }
+  statement {
+    sid    = "AllowECR"
+    effect = "Allow"
+    actions = [
+      "ecr:BatchCheckLayerAvailability",
+      "ecr:CompleteLayerUpload",
+      "ecr:UploadLayerPart",
+      "ecr:InitiateLayerUpload",
+      "ecr:PutImage"
+    ]
+    resources = [local.claim_status_ecr_arn]
+  }
+}
+
+data "aws_iam_policy_document" "this_emailclassifier_ecr" {
+  statement {
+    sid       = "AllowAuthToken"
+    effect    = "Allow"
+    actions   = ["ecr:GetAuthorizationToken"]
+    resources = ["*"]
+  }
+  statement {
+    sid    = "AllowECR"
+    effect = "Allow"
+    actions = [
+      "ecr:BatchCheckLayerAvailability",
+      "ecr:CompleteLayerUpload",
+      "ecr:UploadLayerPart",
+      "ecr:InitiateLayerUpload",
+      "ecr:PutImage"
+    ]
+    resources = [local.agent_email_classifier_ecr]
   }
 }

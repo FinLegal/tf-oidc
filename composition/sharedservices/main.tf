@@ -102,5 +102,23 @@ module "git" {
       }
       conditions = merge(local.aws_github_audience, { "repo" = { test = "StringEquals", variable = "token.actions.githubusercontent.com:sub", values = ["repo:FinLegal/svc-background-jobs:ref:refs/heads/master"] } })
     }
+    ## AWS Native ##
+    "aws-native" = {
+      policies = {
+        claimstatus_ecr = {
+          policy = data.aws_iam_policy_document.this_claimstatus_ecr.json
+        }
+      }
+      conditions = merge(local.aws_github_audience, { "repo" = { test = "StringEquals", variable = "token.actions.githubusercontent.com:sub", values = ["repo:FinLegal/aws-native:ref:refs/heads/main"] } })
+    }
+    ## Intelligent Automation ##
+    "intelligent-automation" = {
+      policies = {
+        emailclassifier_ecr = {
+          policy = data.aws_iam_policy_document.this_emailclassifier_ecr.json
+        }
+      }
+      conditions = merge(local.aws_github_audience, { "repo" = { test = "StringEquals", variable = "token.actions.githubusercontent.com:sub", values = ["repo:FinLegal/agent-email-classifier:ref:refs/heads/main"] } })
+    }
   }
 }
