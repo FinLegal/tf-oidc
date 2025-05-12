@@ -274,8 +274,22 @@ locals {
     }
     "audit-lambda${local.name_suffix}" = {
       policies = {
-        "depoy" = {
+        "deploy" = {
           policy = data.aws_iam_policy_document.this_audit_lambda.json
+        }
+      }
+      conditions = merge(local.aws_github_audience, {
+        "repo" = {
+          test     = "StringEquals",
+          variable = "token.actions.githubusercontent.com:sub",
+          values   = ["repo:FinLegal/aws-native:ref:refs/heads/main"]
+        }
+      })
+    }
+    "aws-native${local.name_suffix}" = {
+      policies = {
+        "deploy" = {
+          policy = data.aws_iam_policy_document.this_aws_native_lambdas.json
         }
       }
       conditions = merge(local.aws_github_audience, {
@@ -289,31 +303,33 @@ locals {
   }
 
   ## Casesite Objects ##
-  casesite_bucket               = data.terraform_remote_state.casesites.outputs.case_site_s3_arn
-  casesite_static_bucket        = data.terraform_remote_state.casesites.outputs.case_site_static_s3_arn
-  casesite_execution_role       = lookup(data.terraform_remote_state.casesites.outputs.task_data, "case-sites", {}).iam_execution_role_arn
-  casesite_task_role            = lookup(data.terraform_remote_state.casesites.outputs.task_data, "case-sites", {}).iam_task_role_arn
-  csdef_execution_role          = lookup(data.terraform_remote_state.casesites.outputs.csdef_task_data, "cs-definitions", {}).iam_execution_role_arn
-  csdef_task_role               = lookup(data.terraform_remote_state.casesites.outputs.csdef_task_data, "cs-definitions", {}).iam_task_role_arn
-  search_execution_role         = lookup(data.terraform_remote_state.appsupport.outputs.search_task_data, "search", {}).iam_execution_role_arn
-  search_task_role              = lookup(data.terraform_remote_state.appsupport.outputs.search_task_data, "search", {}).iam_task_role_arn
-  indexing_execution_role       = lookup(data.terraform_remote_state.appsupport.outputs.indexing_task_data, "indexing", {}).iam_execution_role_arn
-  indexing_task_role            = lookup(data.terraform_remote_state.appsupport.outputs.indexing_task_data, "indexing", {}).iam_task_role_arn
-  internal_api_execution_role   = lookup(data.terraform_remote_state.core.outputs.api_task_data, "internal-api", {}).iam_execution_role_arn
-  internal_api_task_role        = lookup(data.terraform_remote_state.core.outputs.api_task_data, "internal-api", {}).iam_task_role_arn
-  public_api_execution_role     = lookup(data.terraform_remote_state.core.outputs.api_task_data, "public-api", {}).iam_execution_role_arn
-  public_api_task-role          = lookup(data.terraform_remote_state.core.outputs.api_task_data, "public-api", {}).iam_task_role_arn
-  admin_execution_role          = lookup(data.terraform_remote_state.core.outputs.web_task_data, "admin-web", {}).iam_execution_role_arn
-  admin_task_role               = lookup(data.terraform_remote_state.core.outputs.web_task_data, "admin-web", {}).iam_task_role_arn
-  dashboard_execution_role      = lookup(data.terraform_remote_state.core.outputs.web_task_data, "dashboard-web", {}).iam_execution_role_arn
-  dashboard_task_role           = lookup(data.terraform_remote_state.core.outputs.web_task_data, "dashboard-web", {}).iam_task_role_arn
-  userjobs_execution_role       = lookup(data.terraform_remote_state.core.outputs.hangfire_task_data, "user-jobs", {}).iam_execution_role_arn
-  userjobs_task_role            = lookup(data.terraform_remote_state.core.outputs.hangfire_task_data, "user-jobs", {}).iam_task_role_arn
-  systemjobs_execution_role     = lookup(data.terraform_remote_state.core.outputs.hangfire_task_data, "system-jobs", {}).iam_execution_role_arn
-  systemjobs_task_role          = lookup(data.terraform_remote_state.core.outputs.hangfire_task_data, "system-jobs", {}).iam_task_role_arn
-  backgroundjobs_execution_role = lookup(data.terraform_remote_state.appsupport.outputs.background_jobs_task_data, "background-jobs", {}).iam_execution_role_arn
-  backgroundjobs_task_role      = lookup(data.terraform_remote_state.appsupport.outputs.background_jobs_task_data, "background-jobs", {}).iam_task_role_arn
-  native_audit_lambda_arn       = data.terraform_remote_state.native.outputs.audit_lambda_arn
+  casesite_bucket                    = data.terraform_remote_state.casesites.outputs.case_site_s3_arn
+  casesite_static_bucket             = data.terraform_remote_state.casesites.outputs.case_site_static_s3_arn
+  casesite_execution_role            = lookup(data.terraform_remote_state.casesites.outputs.task_data, "case-sites", {}).iam_execution_role_arn
+  casesite_task_role                 = lookup(data.terraform_remote_state.casesites.outputs.task_data, "case-sites", {}).iam_task_role_arn
+  csdef_execution_role               = lookup(data.terraform_remote_state.casesites.outputs.csdef_task_data, "cs-definitions", {}).iam_execution_role_arn
+  csdef_task_role                    = lookup(data.terraform_remote_state.casesites.outputs.csdef_task_data, "cs-definitions", {}).iam_task_role_arn
+  search_execution_role              = lookup(data.terraform_remote_state.appsupport.outputs.search_task_data, "search", {}).iam_execution_role_arn
+  search_task_role                   = lookup(data.terraform_remote_state.appsupport.outputs.search_task_data, "search", {}).iam_task_role_arn
+  indexing_execution_role            = lookup(data.terraform_remote_state.appsupport.outputs.indexing_task_data, "indexing", {}).iam_execution_role_arn
+  indexing_task_role                 = lookup(data.terraform_remote_state.appsupport.outputs.indexing_task_data, "indexing", {}).iam_task_role_arn
+  internal_api_execution_role        = lookup(data.terraform_remote_state.core.outputs.api_task_data, "internal-api", {}).iam_execution_role_arn
+  internal_api_task_role             = lookup(data.terraform_remote_state.core.outputs.api_task_data, "internal-api", {}).iam_task_role_arn
+  public_api_execution_role          = lookup(data.terraform_remote_state.core.outputs.api_task_data, "public-api", {}).iam_execution_role_arn
+  public_api_task-role               = lookup(data.terraform_remote_state.core.outputs.api_task_data, "public-api", {}).iam_task_role_arn
+  admin_execution_role               = lookup(data.terraform_remote_state.core.outputs.web_task_data, "admin-web", {}).iam_execution_role_arn
+  admin_task_role                    = lookup(data.terraform_remote_state.core.outputs.web_task_data, "admin-web", {}).iam_task_role_arn
+  dashboard_execution_role           = lookup(data.terraform_remote_state.core.outputs.web_task_data, "dashboard-web", {}).iam_execution_role_arn
+  dashboard_task_role                = lookup(data.terraform_remote_state.core.outputs.web_task_data, "dashboard-web", {}).iam_task_role_arn
+  userjobs_execution_role            = lookup(data.terraform_remote_state.core.outputs.hangfire_task_data, "user-jobs", {}).iam_execution_role_arn
+  userjobs_task_role                 = lookup(data.terraform_remote_state.core.outputs.hangfire_task_data, "user-jobs", {}).iam_task_role_arn
+  systemjobs_execution_role          = lookup(data.terraform_remote_state.core.outputs.hangfire_task_data, "system-jobs", {}).iam_execution_role_arn
+  systemjobs_task_role               = lookup(data.terraform_remote_state.core.outputs.hangfire_task_data, "system-jobs", {}).iam_task_role_arn
+  backgroundjobs_execution_role      = lookup(data.terraform_remote_state.appsupport.outputs.background_jobs_task_data, "background-jobs", {}).iam_execution_role_arn
+  backgroundjobs_task_role           = lookup(data.terraform_remote_state.appsupport.outputs.background_jobs_task_data, "background-jobs", {}).iam_task_role_arn
+  native_audit_lambda_arn            = data.terraform_remote_state.native.outputs.audit_lambda_arn
+  native_emailtoclaim_lambda         = data.terraform_remote_state.native.outputs.emailtoclaim_lambda_arn
+  native_claimsbulkprocessing_lambda = data.terraform_remote_state.native.outputs.claimsbulkprocessing_lambda_arn
 }
 
 ########################################
@@ -557,5 +573,14 @@ data "aws_iam_policy_document" "this_audit_lambda" {
     effect    = "Allow"
     actions   = ["lambda:UpdateFunctionCode"]
     resources = [local.native_audit_lambda_arn]
+  }
+}
+
+data "aws_iam_policy_document" "this_aws_native_lambdas" {
+  statement {
+    sid       = "AllowLambdaUpdate"
+    effect    = "Allow"
+    actions   = ["lambda:UpdateFunctionCode"]
+    resources = [local.native_claimsbulkprocessing_lambda, local.native_emailtoclaim_lambda]
   }
 }
