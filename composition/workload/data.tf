@@ -619,4 +619,16 @@ data "aws_iam_policy_document" "this_intelligent_automation_lambdas" {
     actions   = ["lambda:UpdateFunctionCode"]
     resources = [local.intelligent_automation_agentemailclassifier_lambda]
   }
+  statement {
+    sid    = "AllowECR"
+    effect = "Allow"
+    actions = [
+      "ecr:GetDownloadUrlForLayer",
+      "ecr:GetAuthorizationToken",
+      "ecr:BatchImportUpstreamImage",
+      "ecr:BatchGetImage",
+      "ecr:BatchCheckLayerAvailability"
+    ]
+    resources = ["*"]
+  }
 }
