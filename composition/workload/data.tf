@@ -40,6 +40,17 @@ data "terraform_remote_state" "core" {
   }
 }
 
+data "terraform_remote_state" "native" {
+  backend = "remote"
+
+  config = {
+    hostname     = "finlegal.scalr.io"
+    organization = data.scalr_current_run.this.environment_id
+    workspaces = {
+      name = "Native"
+    }
+  }
+}
 
 ########################################
 # Computed Variables
@@ -241,6 +252,20 @@ locals {
         }
       })
     }
+    "aws-native${local.name_suffix}" = {
+      policies = {
+        "deploy" = {
+          policy = data.aws_iam_policy_document.this_aws_native_lambdas.json
+        }
+      }
+      conditions = merge(local.aws_github_audience, {
+        "repo" = {
+          test     = "StringEquals",
+          variable = "token.actions.githubusercontent.com:sub",
+          values   = ["repo:FinLegal/aws-native:ref:refs/heads/main"]
+        }
+      })
+    }
   }
 
   ## Casesite Objects ##
@@ -266,6 +291,7 @@ locals {
   userjobs_task_role          = lookup(data.terraform_remote_state.core.outputs.hangfire_task_data, "user-jobs", {}).iam_task_role_arn
   systemjobs_execution_role   = lookup(data.terraform_remote_state.core.outputs.hangfire_task_data, "system-jobs", {}).iam_execution_role_arn
   systemjobs_task_role        = lookup(data.terraform_remote_state.core.outputs.hangfire_task_data, "system-jobs", {}).iam_task_role_arn
+  native_emailtoclaim_lambda  = data.terraform_remote_state.native.outputs.emailtoclaim_lambda_arn
 }
 
 ########################################
@@ -478,5 +504,14 @@ data "aws_iam_policy_document" "this_systemjobs" {
       "codedeploy:RegisterApplicationRevision",
     ]
     resources = ["*"]
+  }
+}
+
+data "aws_iam_policy_document" "this_aws_native_lambdas" {
+  statement {
+    sid       = "AllowLambdaUpdate"
+    effect    = "Allow"
+    actions   = ["lambda:UpdateFunctionCode"]
+    resources = [local.native_emailtoclaim_lambda]
   }
 }
