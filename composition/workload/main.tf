@@ -1,3 +1,8 @@
+## State removals ready for retirement
+removed {
+  from = module.git.aws_iam_openid_connect_provider.this
+}
+
 ########################################
 # GitHub OIDC
 ########################################
